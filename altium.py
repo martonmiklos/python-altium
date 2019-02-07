@@ -9,10 +9,10 @@ from io import BytesIO
 from math import atan2, sin, cos, radians, degrees, hypot
 
 try:
-    from OleFileIO_PL import OleFileIO
+    import olefile as OleFileIO
 except ImportError:
     # Pillow version tends to do illegal seeks with Altium files
-    from PIL.OleFileIO import OleFileIO
+    from PIL.OleFileIO import OleFileIO as OleFileIO
 
 class Object:
     '''Base class for Altium schematic objects'''
@@ -31,7 +31,7 @@ class Object:
 def read(file):
     """Parses an Altium ".SchDoc" schematic file and returns a Sheet object
     """
-    ole = OleFileIO(file)
+    ole = OleFileIO.OleFileIO(file)
     
     stream = ole.openstream("FileHeader")
     records = iter_records(stream)
