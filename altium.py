@@ -128,7 +128,7 @@ def parse_properties(stream, header):
             continue
         
         (name, value) = property.split(b"=", 1)
-        name = name.decode("ascii")
+        name = name.decode("latin1")
         existing = seen.get(name)
         if existing not in (None, value):
             msg = "Conflicting duplicate: {!r}, was {!r}"
@@ -248,7 +248,7 @@ def iter_fonts(sheet):
         yield dict(
             id=id,
             line=sheet.get_int("SIZE" + n),
-            family=sheet["FONTNAME" + n].decode("ascii"),
+            family=sheet["FONTNAME" + n].decode("latin1"),
             italic=sheet.get_bool("ITALIC" + n),
             bold=sheet.get_bool("BOLD" + n),
             underline=sheet.get_bool("UNDERLINE" + n),
@@ -991,7 +991,7 @@ class render:
             font=font_name(obj.get_int("FONTID")),
             offset=(lhs, cy),
             width=cx - lhs,
-            text=obj["TEXT"].decode("ascii").replace("~1", "\n"),
+            text=obj["TEXT"].decode("latin1").replace("~1", "\n"),
             vert=self.renderer.TOP,
             colour=colour(obj),
         )
@@ -1120,7 +1120,7 @@ class render:
             
             pointsx = tuple((x[0]*shape_x_factor+px, x[1]*shape_y_factor+py) for x in shape)
     
-            view.text(obj.get("NAME").decode("ascii"),
+            view.text(obj.get("NAME").decode("latin1"),
                 colour=colour(obj,"TEXTCOLOR"),
                 offset=(px,py),
                 font=font_name(obj.get_int("TEXTFONTID")),
@@ -1235,7 +1235,7 @@ class render:
         if obj.get_bool("ISHIDDEN"):
             obj.check("TEXT", None)
             return
-        desig = obj["TEXT"].decode("ascii")
+        desig = obj["TEXT"].decode("latin1")
         owner = owners[-1].properties
         if owner.get_int("PARTCOUNT") > 2:
             desig += chr(ord("A") + owner.get_int("CURRENTPARTID") - 1)
@@ -1264,7 +1264,7 @@ class render:
         inner_edge = obj.get_int("SYMBOL_INNEREDGE")
         electrical = obj.get_int("ELECTRICAL")
         name = obj.get("NAME")
-        designator = obj["DESIGNATOR"].decode("ascii")
+        designator = obj["DESIGNATOR"].decode("latin1")
         if display_part(owners[-1], obj):
             rotate = pinconglomerate & 3
             with self.renderer.view(offset=offset, rotate=rotate) as view:
@@ -1445,7 +1445,7 @@ class render:
             else:
                 warn("Unhandled power port marker STYLE=" + format(style))
             
-            text = obj["TEXT"].decode("ascii")
+            text = obj["TEXT"].decode("latin1")
             font = obj.get_int("FONTID")
             if obj.get_bool("SHOWNETNAME"):
                 orients = {
@@ -1496,7 +1496,7 @@ class render:
         obj.get_int("INDEXINSHEET")
         obj.check("OWNERPARTID", b"-1")
         
-        name = obj["NAME"].decode("ascii")
+        name = obj["NAME"].decode("latin1")
         kw = dict()
         orient = obj.get_int("ORIENTATION")
         if orient & 1:
@@ -1561,7 +1561,7 @@ class render:
             if found:
                 break
         else:
-            match = match.decode("ascii")
+            match = match.decode("latin1")
             warn("Parameter value not found for {!r}".format(match))
             self.renderer.text(match[0].capitalize() + match[1:], **kw)
     
@@ -1583,7 +1583,7 @@ def font_name(id):
 
 def overline(name):
     spans = list()
-    name = name.decode("ascii")
+    name = name.decode("latin1")
     if name.startswith("\\"):
         name = name[1:]
     
